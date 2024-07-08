@@ -1,16 +1,99 @@
 ---
 Title: pesquia - Mulher lider
 Author: Marcus Ramalho
+bibliography: references.bib
 ---
 
+# Análise - passo a passo
 
-# Carregando os dados
+Após um primeiro tratamento dos dados no excel, importamos o arquivo para o R usando o pacote tidyverse e a função read_excel [@tidyverse]
+
 ```{r}
+#| echo: true
+#| message: false
+#| error: false
+#| warning: false
 
-library(readr)
+library(tidyverse)
+library(readxl)
+library(psych)
+library(GPArotation)
 
-here::here()
+here <- here::here()
 
-mulher_lider <- read_csv("Dados pesquisa _ Projeto Mulher Líder final.csv", delim = ";")
+Dados_pesquisa_Projeto_Mulher_Li_der_final <- read_excel("Dados pesquisa _ Projeto Mulher Líder final.xlsx", 
+     col_types = c("text", "text", "text", 
+         "text", "text", "text", "text", "text", 
+         "text", "text", "text", "text", "text", 
+         "text", "text", "text", "text", "text", 
+         "text", "text", "text", "skip"))
 
 ```
+
+A seguir, fazemos o subset dos dados com as variáveis de interesse e remoção das linhas com valores faltantes
+
+```{r}
+analise <- select(Dados_pesquisa_Projeto_Mulher_Li_der_final, c(2,5,6,7,8,17)) %>% na.omit()
+```
+
+Agora, vamos transformar as variaveis numericas e os caracteres em fatores
+
+
+```{r}
+
+(analise <- analise %>%
+  mutate(across(.cols = 1:6, .fns = as.factor)) %>%
+  as_tibble() %>% head(5))
+
+
+
+
+```
+
+Agora, vamos fazer a análise descritiva das variáveis
+
+```{r}
+
+summary(analise)
+
+```
+
+A seguir podemos fazer a análise gráfica das variáveis
+
+```{r}
+# Instala e carrega o pacote FactoMineR
+if (!requireNamespace("FactoMineR", quietly = TRUE)) install.packages("FactoMineR")
+# Instala e carrega o pacote factoextra
+if (!requireNamespace("factoextra", quietly = TRUE)) install.packages("factoextra")
+library(factoextra)
+library(FactoMineR)
+
+# Realiza a Análise de Correspondência Múltipla (MCA)
+mca_result <- MCA(analise, graph=FALSE)
+
+# Visualiza os resultados
+print(mca_result)
+# Para visualizar os gráficos dos resultados
+plot(mca_result)
+
+# Visualização dos indivíduos no espaço das dimensões
+fviz_contrib(mca_result, choice = "var", dim = 1)
+
+```
+
+```{r}
+# Biplot com FactoMineR
+plot(mca_result, invisible = "ind")
+
+# Ou usando factoextra para mais opções de personalização
+fviz_mca_biplot(mca_result)
+
+# Qualidade da representação das categorias
+fviz_mca_var(mca_result, col.var = "cos2")
+
+```
+
+```{r}
+fviz_mca_ind(mca_result)
+```
+
