@@ -1,0 +1,16 @@
+---
+Title: pesquia - Mulher lider
+Author: Marcus Ramalho
+---
+
+
+# Carregando os dados
+```{r}
+
+library(readr)
+
+here::here()
+
+mulher_lider <- read_csv("Dados pesquisa _ Projeto Mulher Líder final.csv", delim = ";")
+
+```
