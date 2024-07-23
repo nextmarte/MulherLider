@@ -41,9 +41,9 @@ Agora, vamos transformar as variaveis numericas e os caracteres em fatores
 
 ```{r}
 
-(analise <- analise %>%
+analise <- analise %>%
   mutate(across(.cols = 1:6, .fns = as.factor)) %>%
-  as_tibble() %>% head(5))
+  as_tibble() 
 
 
 
